@@ -13,7 +13,7 @@ class chess_board;
 
 struct pos
 {
-    int x; 
+    int x;
     int y;
 };
 
@@ -122,7 +122,7 @@ public:
                 up_right.x++;
                 up_right.y--;
             }
-            
+
             pos down_left = { queen.x, queen.y };
             while(down_left.x >= 0 && down_left.y <= board.size() - 1)
             {
@@ -130,7 +130,7 @@ public:
                     ret.push_back(action{ i, pos{down_left.x, down_left.y} });
                 else if(board[down_left.y][down_left.x] && (down_left.x != queen.x || down_left.y !=queen.y))
                     break;
-                    
+
                 down_left.x--;
                 down_left.y++;
             }
@@ -142,7 +142,7 @@ public:
                     ret.push_back(action{ i, pos{down_right.x, down_right.y} });
                 else if(board[down_right.y][down_right.x] && (down_right.x != queen.x || down_right.y !=queen.y))
                     break;
-    
+
                 down_right.x++;
                 down_right.y++;
             }
@@ -154,7 +154,7 @@ public:
     int f1() // returns the number of pairs of queens that beats each other
     {
         int c = 0;
-    
+
         for(size_t i = 0; i < queens.size(); i++)
         {
             auto queen = queens[i];
@@ -226,7 +226,7 @@ public:
                 up_right.x++;
                 up_right.y--;
             }
-            
+
             pos down_left = { queen.x, queen.y };
             while(down_left.x >= 0 && down_left.y <= board.size() - 1)
             {
@@ -234,7 +234,7 @@ public:
                     c++;
                     break;
                 }
-                    
+
                 down_left.x--;
                 down_left.y++;
             }
@@ -246,7 +246,7 @@ public:
                     c++;
                     break;
                 }
-    
+
                 down_right.x++;
                 down_right.y++;
             }
@@ -279,9 +279,9 @@ public:
                 this->board[i][j] = board[i][j];
                 if(board[i][j])
                 {
-                    queens.push_back(pos{int(j), int(i)});                    
+                    queens.push_back(pos{int(j), int(i)});
                 }
-            }   
+            }
         }
     }
 
@@ -314,7 +314,7 @@ public:
     int already_put_queens()
     {
         int c = 0;
-        
+
         for(const auto& raw : board)
         {
             for(const auto& item : raw)
@@ -323,7 +323,7 @@ public:
                     c++;
             }
         }
-        
+
         return c++;
     }
 
@@ -352,12 +352,12 @@ struct a_star_node
 bool operator==(const chess_board& cb1, const chess_board& cb2)
 {
     bool ret = true;
-    
+
     for(int i = 0; i < cb1.get_board().size(); i++)
     {
         ret &= (cb1.get_board()[i] == cb2.get_board()[i]);
     }
-    
+
     return ret;
 }
 
@@ -428,7 +428,7 @@ public:
         {
             auto next_act = actions.front();
             auto state = states.front();
-            
+
             actions.pop();
             states.pop();
 
@@ -436,7 +436,7 @@ public:
 
             if(is_valid(state.get_board()))
                 return state;
-            
+
             bfs_counter++;
 
             auto new_actions = state.available_actions();
@@ -460,7 +460,7 @@ public:
 
         if(is_valid(start.get_board()))
             return start;
-        
+
         auto available_actions = start.available_actions();
         for(const auto& act : available_actions)
         {
@@ -494,7 +494,7 @@ public:
                 temp.move(act.queen, act.new_pos);
                 int path = min_val.path + temp.f1();
                 opened.push_back({temp, act, path});
-            }   
+            }
         }
 
         return chess_board();
@@ -505,7 +505,7 @@ private:
     bool is_valid(vector<vector<bool>> matrix)
     {
         bool ret = true;
-        
+
         ret &= is_valid_horizontal(matrix);
         ret &= is_valid_vertical(matrix);
         ret &= is_valid_diagonal(matrix);
@@ -530,7 +530,7 @@ private:
     bool is_valid_vertical(vector<vector<bool>> matrix)
     {
         bool ret = true;
-        
+
         for(int i = 0; i < matrix[0].size(); i++)
         {
             int sum = vertical_sum(matrix, i);
@@ -543,7 +543,7 @@ private:
     bool is_valid_diagonal(vector<vector<bool>> matrix) // it is '/'
     {
         bool ret = true;
-        
+
         for(int i = 0; i < matrix.size()*2 - 1; i++)
         {
             int sum = diagonal_sum(matrix, i);
@@ -556,7 +556,7 @@ private:
     bool is_valid_back_diagonal(vector<vector<bool>> matrix) // it is '\'
     {
         bool ret = true;
-        
+
         for(int i = 0; i < matrix.size()*2 - 1; i++)
         {
             int sum = back_diagonal_sum(matrix, i);
@@ -575,12 +575,12 @@ private:
 
         return sum;
     }
-    
+
     int diagonal_sum(vector<vector<bool>> matrix, int index)
     {
         int sum = 0;
         pos pos = {0, 0};
-        
+
         if(index <= matrix.size()-1)
         {
             index = matrix.size() - 1 - index;
@@ -606,7 +606,7 @@ private:
     {
         int sum = 0;
         pos pos = {0, 0};
-        
+
         if(index <= matrix.size()-1)
         {
             index = index;
@@ -644,15 +644,12 @@ void bfs_test(int steps_to_shuffle = 2)
     });
     eight_queens_solver eqs;
     eqs.shuffle(cb, steps_to_shuffle);
-    
-    //chess_board source;
-    //source = cb;
-    
+
     auto bfs_res = eqs.bfs_solve_for(cb);
-    
+
     cout << "!!!!!SOURCE!!!!!" << endl;
     cb.print();
-    
+
     cout << "!!!!!SOLVED!!!!!" << endl;
     bfs_res.print();
 
@@ -675,15 +672,15 @@ void a_star_test(int steps_to_shuffle)
 
     eight_queens_solver eqs;
     eqs.shuffle(cb, steps_to_shuffle);
-    
+
     auto a_star_res = eqs.a_star_for(cb);
-    
+
     cout << "!!!!!SOURCE!!!!!" << endl;
     cb.print();
-    
+
     cout << "!!!!!SOLVED!!!!!" << endl;
     a_star_res.print();
-    
+
     cout << "steps to solve with A*: " << eqs.a_star_couter << endl;
 }
 
@@ -694,9 +691,7 @@ int main()
     int max_steps = 3;
     for (int i = 1; i <= max_steps; i++)
     {
-        //bfs_test(i);
+        bfs_test(i);
         a_star_test(i);
     }
-    
-    
 }
