@@ -6,6 +6,7 @@
 #include <queue>
 #include <thread>
 #include <set>
+#include <chrono>
 
 using namespace std;
 
@@ -23,6 +24,17 @@ struct action
     pos new_pos;
 };
 
+const vector<vector<bool>> solved = {
+    {0, 0, 0, 0, 0, 1, 0, 0},
+    {0, 0, 0, 1, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 1, 0},
+    {1, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 1},
+    {0, 1, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 1, 0, 0, 0},
+    {0, 0, 1, 0, 0, 0, 0, 0}
+};
+
 class chess_board
 {
 private:
@@ -35,7 +47,10 @@ public:
         board = vector<vector<bool>>(8,vector<bool>(8, 0));
     }
 
-
+    void setup_solved()
+    {
+        set_board(solved);
+    }
 
     void setup_diagonal_queens()
     {
@@ -391,10 +406,8 @@ bool operator<(const a_star_node& a1, const a_star_node& a2)
 class eight_queens_solver
 {
 public:
-    int bfs_counter;
-    int a_star_couter;
-
-    chess_board local;
+    size_t bfs_counter;
+    size_t a_star_couter;
 
     void shuffle(chess_board& board, int iterations)
     {
@@ -410,6 +423,7 @@ public:
     {
         queue<chess_board> states;
         queue<action> actions;
+        
         bfs_counter = 0;
 
         if(is_valid(board.get_board()))
@@ -478,13 +492,13 @@ public:
             opened.erase(min_p);
             closed.push_back(min_val);
 
+            a_star_couter++;
+
             if(std::find(closed.begin(), closed.end(), min_val) == closed.end())
                 continue;
 
             if(is_valid(min_val.cb.get_board()))
                 return min_val.cb;
-
-            a_star_couter++;
 
             auto available_actions = min_val.cb.available_actions();
             for(const auto& act : available_actions)
@@ -684,14 +698,68 @@ void a_star_test(int steps_to_shuffle)
     cout << "steps to solve with A*: " << eqs.a_star_couter << endl;
 }
 
-int main()
+void make_20_bfs_test(int complexity = 1)
+{
+    cout << "BFS TEST" << endl;
+    cout << "COMPLEXITY: " << complexity << endl;
+    
+    double sum_ms = 0;
+    for(int i = 0; i < 20; i++)
+    {
+        auto begin = chrono::steady_clock::now();
+
+        chess_board cb;
+        cb.setup_solved();
+
+        eight_queens_solver eqs;
+        eqs.shuffle(cb, complexity);
+
+        eqs.bfs_solve_for(cb);
+
+        auto end = chrono::steady_clock::now();
+
+        auto current = chrono::duration_cast<chrono::milliseconds>(end - begin).count();
+        sum_ms += (double)current;
+
+        cout << "test(" << i << ")=" << (double(current))/1000 << " s | iterations=" << eqs.bfs_counter << endl;
+    }
+    cout << "average=" << (sum_ms/20)/1000 << " s" << endl;
+}
+
+void make_20_A_star_test(int complexity = 1)
+{
+    cout << "A* TEST" << endl;
+    cout << "COMPLEXITY: " << complexity << endl;
+
+    double sum_ms = 0;
+    for(int i = 0; i < 20; i++)
+    {
+        auto begin = chrono::steady_clock::now();
+
+        chess_board cb;
+        cb.setup_solved();
+
+        eight_queens_solver eqs;
+        eqs.shuffle(cb, complexity);
+
+        eqs.a_star_for(cb);
+
+        auto end = chrono::steady_clock::now();
+
+        auto current = chrono::duration_cast<chrono::milliseconds>(end - begin).count();
+        sum_ms += (double)current;
+
+        cout << "test(" << i << ")=" << (double(current))/1000 << " s | iterations=" << eqs.a_star_couter << endl;
+    }
+    cout << "average=" << (sum_ms/20)/1000 << " s" << endl;   
+}
+
+int main(int argc, char** argv)
 {
     srand(time(0));
 
-    int max_steps = 3;
-    for (int i = 1; i <= max_steps; i++)
-    {
-        bfs_test(i);
-        a_star_test(i);
-    }
+    int max_steps = stoi(string(argv[1]));
+    make_20_bfs_test(max_steps);
+    cout << "===============================" << endl;
+    make_20_A_star_test(max_steps);
 }
