@@ -646,16 +646,8 @@ private:
 void bfs_test(int steps_to_shuffle = 2)
 {
     chess_board cb;
-    cb.set_board({
-        {0, 0, 0, 0, 0, 1, 0, 0},
-        {0, 0, 0, 1, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 1, 0},
-        {1, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 1},
-        {0, 1, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0, 0, 0},
-        {0, 0, 1, 0, 0, 0, 0, 0}
-    });
+    cb.setup_solved();
+
     eight_queens_solver eqs;
     eqs.shuffle(cb, steps_to_shuffle);
 
@@ -673,16 +665,7 @@ void bfs_test(int steps_to_shuffle = 2)
 void a_star_test(int steps_to_shuffle)
 {
     chess_board cb;
-    cb.set_board({
-        {0, 0, 0, 0, 0, 1, 0, 0},
-        {0, 0, 0, 1, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 1, 0},
-        {1, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 1},
-        {0, 1, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0, 0, 0},
-        {0, 0, 1, 0, 0, 0, 0, 0}
-    });
+    cb.setup_solved();
 
     eight_queens_solver eqs;
     eqs.shuffle(cb, steps_to_shuffle);
@@ -757,9 +740,13 @@ void make_20_A_star_test(int complexity = 1)
 int main(int argc, char** argv)
 {
     srand(time(0));
+    
+    cout << "==========  example  ==========" << endl;
+    bfs_test(2);
+    a_star_test(2);
 
     int max_steps = stoi(string(argv[1]));
     make_20_bfs_test(max_steps);
     cout << "===============================" << endl;
-    make_20_A_star_test(max_steps);
+    make_20_A_star_test(max_steps);    
 }
